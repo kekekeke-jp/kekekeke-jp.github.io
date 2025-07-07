@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>DOT STAR - ドット描画ツール</title>
+<link rel="icon" type="image/png" href="/dotstar/favicon-96x96.png" sizes="96x96" />
+<link rel="icon" type="image/svg+xml" href="/dotstar/favicon.svg" />
+<link rel="shortcut icon" href="/dotstar/favicon.ico" />
+<link rel="apple-touch-icon" sizes="180x180" href="/dotstar/apple-touch-icon.png" />
+<meta name="apple-mobile-web-app-title" content="DOT STAR" />
+<link rel="manifest" href="/dotstar/site.webmanifest" />
+<meta name="robots" content="noindex">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://kekekeke-jp.github.io/dotstar/">
+  <meta property="og:site_name" content="DOT STAR - ドット描画ツール">
+  <meta property="og:title" content="DOT STAR - ドット描画ツール">
+  <meta property="og:description" content="ドット絵を作ることができます。どうぞご自由にお使いください！">
+  <meta property="og:image" content="https://kekekeke-jp.github.io/dotstar/ogp.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Noto+Sans+JP:wght@100..900&display=swap" rel="stylesheet">
+<style>
+
+.con{
+    width: 100%;
+    height: 100svh;
+    position: fixed;
+    overflow: scroll;
+}
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: "DotGothic16", monospace, sans-serif;
+    height: 100svh;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(to right, #f4f4f4, #fff);
+  }
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(to right, #f8f8f8, #fff);
+    border-bottom: 1px solid #ccc;
+    padding: 0;
+    height: 80px;
+  }
+  header img {
+    height: 70px;
+  }
+  header .controls {
+    margin-bottom:5px;
+    margin-right: 10px;
+    display: flex;
+    gap: 8px;
+  }
+  header .controls button {
+    font-family: "DotGothic16", monospace, sans-serif;
+    font-size: 18px;
+    padding: 6px 10px;
+    background: #eee;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    user-select:none;
+    color: rgb(41, 41, 41);
+  }
+  .main {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+  }
+  .sidebar {
+    min-width: 350px;
+    width: 350px;
+    background: #fff;
+    padding: 1rem 1.2rem;
+    border-right: 1px solid #ccc;
+    overflow-y: auto;
+  }
+  .editor {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #ffffff;
+    flex-direction: column;
+  }
+  canvas#canvas {
+    cursor: cell;
+    image-rendering: pixelated;
+    border: 1px solid #ddd;
+    background: #fff;
+  }
+  h2, h3 {
+    font-size: 16px;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    user-select:none;
+  }
+  input[type="number"] {
+    width: 60px;
+    padding: 4px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  button {
+    font-family: "DotGothic16", monospace, sans-serif;
+    margin-top: 1rem;
+    padding: 8px 16px;
+    background-color: #000;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    user-select:none;
+  }
+  button:active {
+    background-color: #222;
+  }
+  /* 独自カラーピッカー */
+  #customColorPicker {
+    user-select:none;
+  }
+  .slider-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .slider-label {
+    width: 18px;
+    font-weight: bold;
+    user-select:none;
+  }
+  .slider-canvas {
+    vertical-align: middle;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    display: inline-block;
+  }
+  .slider-value {
+    width: 30px;
+    display: inline-block;
+    text-align: center;
+    font-family: monospace;
+    user-select:none;
+  }
+  #previewBox {
+    width: 100%;
+    height: 40px;
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+  }
+  #hexOutput {
+    width: 100px;
+    font-family: monospace;
+    border: 1px solid #ccc;
+    padding: 4px;
+    user-select: text;
+  }
+  .hex-container {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+  }
+  label {
+    user-select:none;
+  }
+  /* ツール選択ボタン */
+  .tool-select {
+    margin-top: 1rem;
+    display: flex;
+    gap: 10px;
+  }
+  .tool-select button {
+    padding: 6px 10px;
+    font-size: 14px;
+    background: #262626;
+    border: 1px solid #000000;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 4px;
+    user-select:none;
+  }
+  .tool-select button.active {
+    background: rgb(48, 114, 28);
+    border-color: rgb(48, 114, 28);
+    color: #ffffff;
+    font-weight: bold;
+  }
+  .color-circle {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    user-select:none;
+    box-shadow: 0 0 3px #9993 inset;
+    transition: transform 0.1s ease;
+  }
+  .color-circle:hover {
+    transform: scale(1.2);
+    border-color: #666;
+  }
+
+
+  @media (max-width: 768px) {
+  .main {
+    flex-direction: column;
+    height: auto;
+  }
+  .sidebar {
+    width: 100%;
+    min-width: auto;
+    order: 2;
+    border-right: none;
+    border-top: 1px solid #ccc;
+    padding: 1rem;
+  }
+  .editor {
+    order: 1;
+    width: 100%;
+    padding: 0.5rem 0;
+  }
+  canvas#canvas {
+    width: 100% !important;
+    height: auto !important;
+    max-height: 60vh;
+  }
+  header {
+    flex-wrap: wrap;
+    height: auto;
+    padding: 0.5rem 1rem;
+  }
+}
+
+</style>
+</head>
+<body>
+
+    <div class="con">
+
+<header>
+  <img src="/dotstar/logo.png" alt="Logo" />
+  <div class="controls">
+    <button onclick="undo()" title="Undo">←</button>
+    <button onclick="redo()" title="Redo">→</button>
+  </div>
+</header>
+
+<div class="main">
+  <div class="sidebar">
+    <h2>SIZE</h2>
+    <input type="number" id="width" value="32" min="1" max="128" /> ×
+    <input type="number" id="height" value="32" min="1" max="128" /> BIT
+
+    <h2>COLOR</h2>
+    <p>デフォルトカラー</p>
+    <div id="defaultColors" style="display:flex; flex-wrap: wrap; gap:6px; margin-bottom:1rem;">
+      <!-- JSで自動生成 -->
+    </div>
+
+    <div id="customColorPicker">
+      <div id="previewBox"></div>
+
+      <h3>RGB</h3>
+      <div class="slider-row" data-color="r">
+        <div class="slider-label">R</div>
+        <canvas class="slider-canvas" width="256" height="20"></canvas>
+        <div class="slider-value">0</div>
+      </div>
+
+      <div class="slider-row" data-color="g">
+        <div class="slider-label">G</div>
+        <canvas class="slider-canvas" width="256" height="20"></canvas>
+        <div class="slider-value">0</div>
+      </div>
+
+      <div class="slider-row" data-color="b">
+        <div class="slider-label">B</div>
+        <canvas class="slider-canvas" width="256" height="20"></canvas>
+        <div class="slider-value">0</div>
+      </div>
+
+      <div class="hex-container">
+        HEX:
+        <input type="text" id="hexOutput" readonly />
+      </div>
+
+      <h3>HSB</h3>
+      <div class="slider-row" data-color="h">
+        <div class="slider-label">H</div>
+        <canvas class="slider-canvas" width="256" height="20"></canvas>
+        <div class="slider-value">0</div>
+      </div>
+
+      <div class="slider-row" data-color="s">
+        <div class="slider-label">S</div>
+        <canvas class="slider-canvas" width="256" height="20"></canvas>
+        <div class="slider-value">0</div>
+      </div>
+
+      <div class="slider-row" data-color="v">
+        <div class="slider-label">B</div>
+        <canvas class="slider-canvas" width="256" height="20"></canvas>
+        <div class="slider-value">0</div>
+      </div>
+    </div>
+
+    <h2>TOOL</h2>
+    <div class="tool-select">
+      <button id="penBtn" class="active" onclick="selectTool('pen')">ペン</button>
+      <button id="eraserBtn" onclick="selectTool('eraser')">消しゴム</button>
+    </div>
+
+    <h2>SAVE</h2>
+    <input type="number" id="exportSize" value="512" min="32" max="2048" /> px<br />
+    <button onclick="saveImage()">PNG保存</button>
+    <button onclick="saveSVG()">SVG保存</button>
+  </div>
+
+  <div class="editor">
+    <canvas id="canvas" width="512" height="512"></canvas>
+  </div>
+</div>
+</div>
+
+<script>
+    (() => {
+  const canvas = document.getElementById("canvas");
+  const ctx = canvas.getContext("2d");
+
+  let gridW = 32, gridH = 32;
+  let pixelW = canvas.width / gridW;
+  let pixelH = canvas.height / gridH;
+  let color = "#000000";
+  let tool = "pen";
+
+  let data = Array.from({ length: gridH }, () => Array(gridW).fill("#ffffff"));
+  let history = [];
+  let future = [];
+
+  function drawGrid() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for(let y=0; y<gridH; y++) {
+      for(let x=0; x<gridW; x++) {
+        ctx.fillStyle = data[y][x];
+        ctx.fillRect(x*pixelW, y*pixelH, pixelW, pixelH);
+        ctx.strokeStyle = "#e0e0e0";
+        ctx.strokeRect(x*pixelW, y*pixelH, pixelW, pixelH);
+      }
+    }
+  }
+
+  function saveHistory() {
+    history.push(JSON.stringify(data));
+    if(history.length > 100) history.shift();
+    future = [];
+  }
+
+  function undo() {
+    if(history.length === 0) return;
+    future.push(JSON.stringify(data));
+    data = JSON.parse(history.pop());
+    drawGrid();
+  }
+
+  function redo() {
+    if(future.length === 0) return;
+    history.push(JSON.stringify(data));
+    data = JSON.parse(future.pop());
+    drawGrid();
+  }
+
+  function resizeCanvas() {
+    const w = parseInt(document.getElementById("width").value);
+    const h = parseInt(document.getElementById("height").value);
+    if(isNaN(w) || isNaN(h) || w<1 || h>128 || h<1 || h>128) return;
+    gridW = w;
+    gridH = h;
+    const ratio = gridW/gridH;
+    canvas.width = 512;
+    canvas.height = 512 / ratio;
+    pixelW = canvas.width / gridW;
+    pixelH = canvas.height / gridH;
+    data = Array.from({ length: gridH }, () => Array(gridW).fill("#ffffff"));
+    history = [];
+    future = [];
+    drawGrid();
+  }
+
+  document.getElementById("width").addEventListener("change", resizeCanvas);
+  document.getElementById("height").addEventListener("change", resizeCanvas);
+
+
+
+function handleDraw(clientX, clientY) {
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
+
+  const x = Math.floor((clientX - rect.left) * scaleX / pixelW);
+  const y = Math.floor((clientY - rect.top) * scaleY / pixelH);
+  if(x < 0 || x >= gridW || y < 0 || y >= gridH) return;
+  saveHistory();
+  data[y][x] = (tool === "pen") ? color : "#ffffff";
+  drawGrid();
+}
+
+
+
+  // クリックイベント
+  canvas.addEventListener("click", e => {
+    handleDraw(e.clientX, e.clientY);
+  });
+
+  // タッチイベント対応
+  canvas.addEventListener("touchstart", e => {
+    e.preventDefault();
+    if(e.touches.length > 0) {
+      const touch = e.touches[0];
+      handleDraw(touch.clientX, touch.clientY);
+    }
+  });
+
+  // 保存PNG
+  function saveImage() {
+    const sizeInput = document.getElementById("exportSize").value;
+    let size = parseInt(sizeInput);
+    if(isNaN(size) || size < 32) size = 512;
+    const aspect = canvas.height / canvas.width;
+    const tmp = document.createElement("canvas");
+    tmp.width = size;
+    tmp.height = size * aspect;
+    const tctx = tmp.getContext("2d");
+    for(let y=0; y<gridH; y++) {
+      for(let x=0; x<gridW; x++) {
+        tctx.fillStyle = data[y][x];
+        tctx.fillRect(x*(tmp.width/gridW), y*(tmp.height/gridH), tmp.width/gridW, tmp.height/gridH);
+      }
+    }
+    const link = document.createElement("a");
+    link.download = "dot.png";
+    link.href = tmp.toDataURL();
+    link.click();
+  }
+
+  // 保存SVG
+  function saveSVG() {
+    const svgParts = [`<svg xmlns="http://www.w3.org/2000/svg" width="${gridW*10}" height="${gridH*10}">`];
+    for(let y=0; y<gridH; y++) {
+      for(let x=0; x<gridW; x++) {
+        const fill = data[y][x];
+        if(fill !== "#ffffff") {
+          svgParts.push(`<rect x="${x*10}" y="${y*10}" width="10" height="10" fill="${fill}" />`);
+        }
+      }
+    }
+    svgParts.push(`</svg>`);
+    const blob = new Blob([svgParts.join("")], {type:"image/svg+xml"});
+    const link = document.createElement("a");
+    link.download = "dot.svg";
+    link.href = URL.createObjectURL(blob);
+    link.click();
+  }
+
+  // ツール切替
+  function selectTool(t) {
+    tool = t;
+    document.getElementById("penBtn").classList.toggle("active", t === "pen");
+    document.getElementById("eraserBtn").classList.toggle("active", t === "eraser");
+  }
+
+  // -------- 独自RGBスライダー --------
+  const picker = document.getElementById("customColorPicker");
+  const previewBox = document.getElementById("previewBox");
+  const hexOutput = document.getElementById("hexOutput");
+
+  const rgb = { r: 0, g: 0, b: 0 };
+
+  const sliders = Array.from(picker.querySelectorAll(".slider-row")).map(row => {
+    return {
+      container: row,
+      color: row.getAttribute("data-color"),
+      canvas: row.querySelector("canvas"),
+      ctx: row.querySelector("canvas").getContext("2d"),
+      valueDisplay: row.querySelector(".slider-value"),
+      width: row.querySelector("canvas").width,
+      height: row.querySelector("canvas").height,
+    };
+  });
+
+  function componentToHex(c) {
+    const hex = c.toString(16);
+    return hex.length === 1 ? "0" + hex : hex;
+  }
+  function rgbToHex(r,g,b) {
+    return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+  }
+
+  function drawGradient(slider) {
+    const {ctx, width, height, color} = slider;
+    const gradient = ctx.createLinearGradient(0, 0, width, 0);
+    if(color === "r") {
+      gradient.addColorStop(0, `rgb(0,${rgb.g},${rgb.b})`);
+      gradient.addColorStop(1, `rgb(255,${rgb.g},${rgb.b})`);
+    } else if(color === "g") {
+      gradient.addColorStop(0, `rgb(${rgb.r},0,${rgb.b})`);
+      gradient.addColorStop(1, `rgb(${rgb.r},255,${rgb.b})`);
+    } else if(color === "b") {
+      gradient.addColorStop(0, `rgb(${rgb.r},${rgb.g},0)`);
+      gradient.addColorStop(1, `rgb(${rgb.r},${rgb.g},255)`);
+    }
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, width, height);
+
+    const pos = (rgb[color] / 255) * width;
+    ctx.beginPath();
+    ctx.arc(pos, height / 2, 8, 0, Math.PI*2);
+    ctx.fillStyle = "#fff";
+    ctx.strokeStyle = "#000";
+    ctx.lineWidth = 2;
+    ctx.fill();
+    ctx.stroke();
+  }
+
+  function drawAll() {
+    sliders.forEach(drawGradient);
+  }
+
+  function updatePreview() {
+    const hex = rgbToHex(rgb.r, rgb.g, rgb.b);
+    previewBox.style.backgroundColor = hex;
+    hexOutput.value = hex;
+  }
+
+  let dragging = null;
+
+  sliders.forEach(slider => {
+    slider.canvas.addEventListener("mousedown", e => {
+      dragging = slider;
+      updateByPointer(slider, e);
+      window.addEventListener("mousemove", onMouseMove);
+      window.addEventListener("mouseup", onMouseUp);
+    });
+    slider.canvas.addEventListener("touchstart", e => {
+      dragging = slider;
+      updateByPointer(slider, e.touches[0]);
+      window.addEventListener("touchmove", onTouchMove, {passive:false});
+      window.addEventListener("touchend", onTouchEnd);
+    });
+  });
+
+  function updateByPointer(slider, e) {
+    const rect = slider.canvas.getBoundingClientRect();
+    let x = e.clientX - rect.left;
+    if(x < 0) x = 0;
+    if(x > slider.width) x = slider.width;
+    rgb[slider.color] = Math.round((x / slider.width) * 255);
+    slider.valueDisplay.textContent = rgb[slider.color];
+    drawAll();
+    updatePreview();
+
+    color = rgbToHex(rgb.r, rgb.g, rgb.b);
+  }
+
+  function onMouseMove(e) {
+    if(!dragging) return;
+    updateByPointer(dragging, e);
+  }
+  function onMouseUp(e) {
+    if(!dragging) return;
+    updateByPointer(dragging, e);
+    dragging = null;
+    window.removeEventListener("mousemove", onMouseMove);
+    window.removeEventListener("mouseup", onMouseUp);
+  }
+
+  function onTouchMove(e) {
+    e.preventDefault();
+    if(!dragging) return;
+    updateByPointer(dragging, e.touches[0]);
+  }
+  function onTouchEnd(e) {
+    if(!dragging) return;
+    dragging = null;
+    window.removeEventListener("touchmove", onTouchMove);
+    window.removeEventListener("touchend", onTouchEnd);
+  }
+
+  // デフォルトカラー
+  const defaultColors = [
+    "#ff4d4d", "#cc66ff", "#33ccff", "#3399ff", "#33cc99",
+    "#99ff66", "#ff9933", "#000000", "#999999", "#ffffff"
+  ];
+
+  const defaultColorsContainer = document.getElementById("defaultColors");
+
+  defaultColors.forEach(c => {
+    const div = document.createElement("div");
+    div.className = "color-circle";
+    div.style.backgroundColor = c;
+    div.title = c;
+    div.addEventListener("click", () => {
+      color = c;
+      const r = parseInt(c.substr(1,2),16);
+      const g = parseInt(c.substr(3,2),16);
+      const b = parseInt(c.substr(5,2),16);
+      rgb.r = r; rgb.g = g; rgb.b = b;
+      sliders.forEach(sl => {
+        sl.valueDisplay.textContent = rgb[sl.color];
+      });
+      drawAll();
+      updatePreview();
+    });
+    defaultColorsContainer.appendChild(div);
+  });
+
+  sliders.forEach(s => s.valueDisplay.textContent = "0");
+  drawAll();
+  updatePreview();
+  drawGrid();
+
+  window.undo = undo;
+  window.redo = redo;
+  window.saveImage = saveImage;
+  window.saveSVG = saveSVG;
+  window.selectTool = selectTool;
+
+})();
+
+
+
+let isDirty = false;
+
+// 例: inputやtextareaに変更があったら
+document.querySelectorAll('input, textarea, campus').forEach(el => {
+  el.addEventListener('input', () => {
+    isDirty = true;
+  });
+});
+
+window.addEventListener('beforeunload', function (e) {
+  if (!isDirty) return; // 変更なければ何もしない
+
+  e.preventDefault();
+  e.returnValue = ''; // 文字列は無視される
+});
+
+
+
+</script>
+</body>
+</html>
