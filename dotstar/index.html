@@ -263,12 +263,9 @@
     <input type="number" id="height" value="32" min="1" max="128" /> BIT
 
     <h2>COLOR</h2>
-    <p>デフォルトカラー</p>
-    <div id="defaultColors" style="display:flex; flex-wrap: wrap; gap:6px; margin-bottom:1rem;">
-      <!-- JSで自動生成 -->
-    </div>
 
-    <p>自分で色を作る</p>
+
+    <p>カラーピッカー</p>
     <div id="customColorPicker">
       <div id="previewBox"></div>
 
@@ -665,18 +662,7 @@
 
   // デフォルトカラーなどがあればここに追記してOK
 
-  const defaultColors = [
-  "#E63946", // Red
-  "#F1A7B3", // Pink
-  "#F4A261", // Orange
-  "#FFD166", // Yellow
-  "#2A9D8F", // Green
-  "#264653", // Blue
-  "#A8DADC", // Light Blue
-  "#6C757D", // Gray
-  "#1D1D1D", // Black
-  "#F0F0F0"  // White
-];
+
 
 const defaultColorsContainer = document.getElementById("defaultColors");
 defaultColorsContainer.innerHTML = ""; // いちおうクリア
