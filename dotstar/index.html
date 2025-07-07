@@ -4,18 +4,18 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>DOT STAR - ドット描画ツール</title>
-<link rel="icon" type="image/png" href="https://kekekeke-jp.github.io/dotstar/favicon-96x96.png" sizes="96x96" />
-<link rel="icon" type="image/svg+xml" href="https://kekekeke-jp.github.io/dotstar/favicon.svg" />
-<link rel="shortcut icon" href="https://kekekeke-jp.github.io/dotstar/favicon.ico" />
-<link rel="apple-touch-icon" sizes="180x180" href="https://kekekeke-jp.github.io/dotstar/apple-touch-icon.png" />
+<link rel="icon" type="image/png" href="/dotstar/favicon-96x96.png" sizes="96x96" />
+<link rel="icon" type="image/svg+xml" href="/dotstar/favicon.svg" />
+<link rel="shortcut icon" href="/dotstar/favicon.ico" />
+<link rel="apple-touch-icon" sizes="180x180" href="/dotstar/apple-touch-icon.png" />
 <meta name="apple-mobile-web-app-title" content="DOT STAR" />
-<link rel="manifest" href="https://kekekeke-jp.github.io/dotstar/site.webmanifest" />
+<link rel="manifest" href="/dotstar/site.webmanifest" />
 <meta name="robots" content="noindex">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://kekekeke-jp.github.io/dotstar/">
   <meta property="og:site_name" content="DOT STAR - ドット描画ツール">
   <meta property="og:title" content="DOT STAR - ドット描画ツール">
-  <meta property="og:description" content="ドット絵を作ることができます。どうぞご自由にお使いください！再読み込みすると消えることがあるので気をつけてくださいね！">
+  <meta property="og:description" content="ドット絵を作ることができます。どうぞご自由にお使いください！再読み込みするとデータが消えてしまうので気をつけてください！">
   <meta property="og:image" content="https://kekekeke-jp.github.io/dotstar/ogp.png">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -268,52 +268,35 @@
       <!-- JSで自動生成 -->
     </div>
 
+    <p>自分で色を作る</p>
     <div id="customColorPicker">
       <div id="previewBox"></div>
 
-      <h3>RGB</h3>
-      <div class="slider-row" data-color="r">
-        <div class="slider-label">R</div>
-        <canvas class="slider-canvas" width="256" height="20"></canvas>
-        <div class="slider-value">0</div>
-      </div>
 
-      <div class="slider-row" data-color="g">
-        <div class="slider-label">G</div>
-        <canvas class="slider-canvas" width="256" height="20"></canvas>
-        <div class="slider-value">0</div>
-      </div>
+  <div class="slider-row" data-color="h">
+    <div class="slider-label">H</div>
+    <canvas class="slider-canvas" width="256" height="20"></canvas>
+    <div class="slider-value">0</div>
+  </div>
 
-      <div class="slider-row" data-color="b">
-        <div class="slider-label">B</div>
-        <canvas class="slider-canvas" width="256" height="20"></canvas>
-        <div class="slider-value">0</div>
-      </div>
+  <div class="slider-row" data-color="s">
+    <div class="slider-label">S</div>
+    <canvas class="slider-canvas" width="256" height="20"></canvas>
+    <div class="slider-value">100</div>
+  </div>
 
-      <div class="hex-container">
-        HEX:
-        <input type="text" id="hexOutput" readonly />
-      </div>
+  <div class="slider-row" data-color="b">
+    <div class="slider-label">B</div>
+    <canvas class="slider-canvas" width="256" height="20"></canvas>
+    <div class="slider-value">100</div>
+  </div>
 
-      <h3>HSB</h3>
-      <div class="slider-row" data-color="h">
-        <div class="slider-label">H</div>
-        <canvas class="slider-canvas" width="256" height="20"></canvas>
-        <div class="slider-value">0</div>
-      </div>
+  <div class="hex-container">
+    HEX:
+    <input type="text" id="hexOutput" readonly />
+  </div>
+</div>
 
-      <div class="slider-row" data-color="s">
-        <div class="slider-label">S</div>
-        <canvas class="slider-canvas" width="256" height="20"></canvas>
-        <div class="slider-value">0</div>
-      </div>
-
-      <div class="slider-row" data-color="v">
-        <div class="slider-label">B</div>
-        <canvas class="slider-canvas" width="256" height="20"></canvas>
-        <div class="slider-value">0</div>
-      </div>
-    </div>
 
     <h2>TOOL</h2>
     <div class="tool-select">
@@ -341,7 +324,7 @@
   let gridW = 32, gridH = 32;
   let pixelW = canvas.width / gridW;
   let pixelH = canvas.height / gridH;
-  let color = "#000000";
+  let color = "#000000";  // 現在の色（HEX）
   let tool = "pen";
 
   let data = Array.from({ length: gridH }, () => Array(gridW).fill("#ffffff"));
@@ -383,10 +366,10 @@
   function resizeCanvas() {
     const w = parseInt(document.getElementById("width").value);
     const h = parseInt(document.getElementById("height").value);
-    if(isNaN(w) || isNaN(h) || w<1 || h>128 || h<1 || h>128) return;
+    if(isNaN(w) || isNaN(h) || w<1 || w>128 || h<1 || h>128) return;
     gridW = w;
     gridH = h;
-    const ratio = gridW/gridH;
+    const ratio = gridW / gridH;
     canvas.width = 512;
     canvas.height = 512 / ratio;
     pixelW = canvas.width / gridW;
@@ -400,29 +383,23 @@
   document.getElementById("width").addEventListener("change", resizeCanvas);
   document.getElementById("height").addEventListener("change", resizeCanvas);
 
+  function handleDraw(clientX, clientY) {
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
 
+    const x = Math.floor((clientX - rect.left) * scaleX / pixelW);
+    const y = Math.floor((clientY - rect.top) * scaleY / pixelH);
+    if(x < 0 || x >= gridW || y < 0 || y >= gridH) return;
+    saveHistory();
+    data[y][x] = (tool === "pen") ? color : "#ffffff";
+    drawGrid();
+  }
 
-function handleDraw(clientX, clientY) {
-  const rect = canvas.getBoundingClientRect();
-  const scaleX = canvas.width / rect.width;
-  const scaleY = canvas.height / rect.height;
-
-  const x = Math.floor((clientX - rect.left) * scaleX / pixelW);
-  const y = Math.floor((clientY - rect.top) * scaleY / pixelH);
-  if(x < 0 || x >= gridW || y < 0 || y >= gridH) return;
-  saveHistory();
-  data[y][x] = (tool === "pen") ? color : "#ffffff";
-  drawGrid();
-}
-
-
-
-  // クリックイベント
   canvas.addEventListener("click", e => {
     handleDraw(e.clientX, e.clientY);
   });
 
-  // タッチイベント対応
   canvas.addEventListener("touchstart", e => {
     e.preventDefault();
     if(e.touches.length > 0) {
@@ -431,7 +408,6 @@ function handleDraw(clientX, clientY) {
     }
   });
 
-  // 保存PNG
   function saveImage() {
     const sizeInput = document.getElementById("exportSize").value;
     let size = parseInt(sizeInput);
@@ -453,7 +429,6 @@ function handleDraw(clientX, clientY) {
     link.click();
   }
 
-  // 保存SVG
   function saveSVG() {
     const svgParts = [`<svg xmlns="http://www.w3.org/2000/svg" width="${gridW*10}" height="${gridH*10}">`];
     for(let y=0; y<gridH; y++) {
@@ -472,24 +447,25 @@ function handleDraw(clientX, clientY) {
     link.click();
   }
 
-  // ツール切替
   function selectTool(t) {
     tool = t;
     document.getElementById("penBtn").classList.toggle("active", t === "pen");
     document.getElementById("eraserBtn").classList.toggle("active", t === "eraser");
   }
 
-  // -------- 独自RGBスライダー --------
+  // ================= HSBスライダー部分 =================
+
   const picker = document.getElementById("customColorPicker");
   const previewBox = document.getElementById("previewBox");
   const hexOutput = document.getElementById("hexOutput");
 
-  const rgb = { r: 0, g: 0, b: 0 };
+  // HSB値（H:0-360, S,B:0-100）
+  const hsb = { h: 0, s: 100, b: 100 };
 
   const sliders = Array.from(picker.querySelectorAll(".slider-row")).map(row => {
     return {
       container: row,
-      color: row.getAttribute("data-color"),
+      name: row.getAttribute("data-color"), // h, s, b
       canvas: row.querySelector("canvas"),
       ctx: row.querySelector("canvas").getContext("2d"),
       valueDisplay: row.querySelector(".slider-value"),
@@ -498,33 +474,104 @@ function handleDraw(clientX, clientY) {
     };
   });
 
+  // HSB(HSV) → RGB変換
+  function HSBtoRGB(h, s, v) {
+    h = h % 360;
+    if(h < 0) h += 360;
+    s /= 100;
+    v /= 100;
+
+    const c = v * s;
+    const x = c * (1 - Math.abs((h / 60) % 2 -1));
+    const m = v - c;
+
+    let r1, g1, b1;
+    if(h < 60) { r1 = c; g1 = x; b1 = 0; }
+    else if(h < 120) { r1 = x; g1 = c; b1 = 0; }
+    else if(h < 180) { r1 = 0; g1 = c; b1 = x; }
+    else if(h < 240) { r1 = 0; g1 = x; b1 = c; }
+    else if(h < 300) { r1 = x; g1 = 0; b1 = c; }
+    else { r1 = c; g1 = 0; b1 = x; }
+
+    const r = Math.round((r1 + m) * 255);
+    const g = Math.round((g1 + m) * 255);
+    const b = Math.round((b1 + m) * 255);
+
+    return { r, g, b };
+  }
+
+  // RGB → HEX変換
   function componentToHex(c) {
     const hex = c.toString(16);
-    return hex.length === 1 ? "0" + hex : hex;
+    return hex.length === 1 ? "0"+hex : hex;
   }
   function rgbToHex(r,g,b) {
     return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
   }
 
-  function drawGradient(slider) {
-    const {ctx, width, height, color} = slider;
-    const gradient = ctx.createLinearGradient(0, 0, width, 0);
-    if(color === "r") {
-      gradient.addColorStop(0, `rgb(0,${rgb.g},${rgb.b})`);
-      gradient.addColorStop(1, `rgb(255,${rgb.g},${rgb.b})`);
-    } else if(color === "g") {
-      gradient.addColorStop(0, `rgb(${rgb.r},0,${rgb.b})`);
-      gradient.addColorStop(1, `rgb(${rgb.r},255,${rgb.b})`);
-    } else if(color === "b") {
-      gradient.addColorStop(0, `rgb(${rgb.r},${rgb.g},0)`);
-      gradient.addColorStop(1, `rgb(${rgb.r},${rgb.g},255)`);
+  // 各スライダーのグラデーション描画
+  function drawHueGradient() {
+    const s = sliders.find(sl => sl.name === "h");
+    const ctx = s.ctx;
+    const w = s.width;
+    const h = s.height;
+    const gradient = ctx.createLinearGradient(0, 0, w, 0);
+    for(let i=0; i<=360; i+=60){
+      const c = HSBtoRGB(i, 100, 100);
+      gradient.addColorStop(i/360, `rgb(${c.r},${c.g},${c.b})`);
     }
     ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, width, height);
+    ctx.fillRect(0, 0, w, h);
 
-    const pos = (rgb[color] / 255) * width;
+    const pos = (hsb.h / 360) * w;
     ctx.beginPath();
-    ctx.arc(pos, height / 2, 8, 0, Math.PI*2);
+    ctx.arc(pos, h/2, 8, 0, Math.PI*2);
+    ctx.fillStyle = "#fff";
+    ctx.strokeStyle = "#000";
+    ctx.lineWidth = 2;
+    ctx.fill();
+    ctx.stroke();
+  }
+
+  function drawSaturationGradient() {
+    const s = sliders.find(sl => sl.name === "s");
+    const ctx = s.ctx;
+    const w = s.width;
+    const h = s.height;
+    const c0 = HSBtoRGB(hsb.h, 0, hsb.b);
+    const c1 = HSBtoRGB(hsb.h, 100, hsb.b);
+    const gradient = ctx.createLinearGradient(0, 0, w, 0);
+    gradient.addColorStop(0, `rgb(${c0.r},${c0.g},${c0.b})`);
+    gradient.addColorStop(1, `rgb(${c1.r},${c1.g},${c1.b})`);
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, w, h);
+
+    const pos = (hsb.s / 100) * w;
+    ctx.beginPath();
+    ctx.arc(pos, h/2, 8, 0, Math.PI*2);
+    ctx.fillStyle = "#fff";
+    ctx.strokeStyle = "#000";
+    ctx.lineWidth = 2;
+    ctx.fill();
+    ctx.stroke();
+  }
+
+  function drawBrightnessGradient() {
+    const s = sliders.find(sl => sl.name === "b");
+    const ctx = s.ctx;
+    const w = s.width;
+    const h = s.height;
+    const c0 = HSBtoRGB(hsb.h, hsb.s, 0);
+    const c1 = HSBtoRGB(hsb.h, hsb.s, 100);
+    const gradient = ctx.createLinearGradient(0, 0, w, 0);
+    gradient.addColorStop(0, `rgb(${c0.r},${c0.g},${c0.b})`);
+    gradient.addColorStop(1, `rgb(${c1.r},${c1.g},${c1.b})`);
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, w, h);
+
+    const pos = (hsb.b / 100) * w;
+    ctx.beginPath();
+    ctx.arc(pos, h/2, 8, 0, Math.PI*2);
     ctx.fillStyle = "#fff";
     ctx.strokeStyle = "#000";
     ctx.lineWidth = 2;
@@ -533,13 +580,38 @@ function handleDraw(clientX, clientY) {
   }
 
   function drawAll() {
-    sliders.forEach(drawGradient);
+    drawHueGradient();
+    drawSaturationGradient();
+    drawBrightnessGradient();
+
+    sliders.forEach(sl => {
+      sl.valueDisplay.textContent = Math.round(hsb[sl.name]);
+    });
   }
 
   function updatePreview() {
+    const rgb = HSBtoRGB(hsb.h, hsb.s, hsb.b);
     const hex = rgbToHex(rgb.r, rgb.g, rgb.b);
     previewBox.style.backgroundColor = hex;
     hexOutput.value = hex;
+
+    // ドット描画用color更新
+    color = hex;
+  }
+
+  function updateByPointer(slider, e) {
+    const rect = slider.canvas.getBoundingClientRect();
+    let x = e.clientX - rect.left;
+    if(x < 0) x = 0;
+    if(x > slider.width) x = slider.width;
+
+    if(slider.name === "h") {
+      hsb.h = (x / slider.width) * 360;
+    } else {
+      hsb[slider.name] = (x / slider.width) * 100;
+    }
+    drawAll();
+    updatePreview();
   }
 
   let dragging = null;
@@ -554,23 +626,10 @@ function handleDraw(clientX, clientY) {
     slider.canvas.addEventListener("touchstart", e => {
       dragging = slider;
       updateByPointer(slider, e.touches[0]);
-      window.addEventListener("touchmove", onTouchMove, {passive:false});
+      window.addEventListener("touchmove", onTouchMove, { passive:false });
       window.addEventListener("touchend", onTouchEnd);
     });
   });
-
-  function updateByPointer(slider, e) {
-    const rect = slider.canvas.getBoundingClientRect();
-    let x = e.clientX - rect.left;
-    if(x < 0) x = 0;
-    if(x > slider.width) x = slider.width;
-    rgb[slider.color] = Math.round((x / slider.width) * 255);
-    slider.valueDisplay.textContent = rgb[slider.color];
-    drawAll();
-    updatePreview();
-
-    color = rgbToHex(rgb.r, rgb.g, rgb.b);
-  }
 
   function onMouseMove(e) {
     if(!dragging) return;
@@ -583,7 +642,6 @@ function handleDraw(clientX, clientY) {
     window.removeEventListener("mousemove", onMouseMove);
     window.removeEventListener("mouseup", onMouseUp);
   }
-
   function onTouchMove(e) {
     e.preventDefault();
     if(!dragging) return;
@@ -596,39 +654,51 @@ function handleDraw(clientX, clientY) {
     window.removeEventListener("touchend", onTouchEnd);
   }
 
-  // デフォルトカラー
-  const defaultColors = [
-    "#ff4d4d", "#cc66ff", "#33ccff", "#3399ff", "#33cc99",
-    "#99ff66", "#ff9933", "#000000", "#999999", "#ffffff"
-  ];
-
-  const defaultColorsContainer = document.getElementById("defaultColors");
-
-  defaultColors.forEach(c => {
-    const div = document.createElement("div");
-    div.className = "color-circle";
-    div.style.backgroundColor = c;
-    div.title = c;
-    div.addEventListener("click", () => {
-      color = c;
-      const r = parseInt(c.substr(1,2),16);
-      const g = parseInt(c.substr(3,2),16);
-      const b = parseInt(c.substr(5,2),16);
-      rgb.r = r; rgb.g = g; rgb.b = b;
-      sliders.forEach(sl => {
-        sl.valueDisplay.textContent = rgb[sl.color];
-      });
-      drawAll();
-      updatePreview();
-    });
-    defaultColorsContainer.appendChild(div);
-  });
-
-  sliders.forEach(s => s.valueDisplay.textContent = "0");
+  // 初期値セット
+  hsb.h = 0;
+  hsb.s = 100;
+  hsb.b = 100;
   drawAll();
   updatePreview();
+
+  // ------------------------------------------------
+
+  // デフォルトカラーなどがあればここに追記してOK
+
+  const defaultColors = [
+  "#E63946", // Red
+  "#F1A7B3", // Pink
+  "#F4A261", // Orange
+  "#FFD166", // Yellow
+  "#2A9D8F", // Green
+  "#264653", // Blue
+  "#A8DADC", // Light Blue
+  "#6C757D", // Gray
+  "#1D1D1D", // Black
+  "#F0F0F0"  // White
+];
+
+const defaultColorsContainer = document.getElementById("defaultColors");
+defaultColorsContainer.innerHTML = ""; // いちおうクリア
+
+defaultColors.forEach(color => {
+  const div = document.createElement("div");
+  div.className = "color-circle";
+  div.style.backgroundColor = color;
+  div.title = color;
+  div.addEventListener("click", () => {
+    // 色選択時の処理（必要に応じて色をセット）
+    // 例: color変数やスライダーの値を更新する処理をここに書く
+    console.log("Selected color:", color);
+  });
+  defaultColorsContainer.appendChild(div);
+});
+
+
+  sliders.forEach(s => s.valueDisplay.textContent = "0");
   drawGrid();
 
+  // グローバル関数割当
   window.undo = undo;
   window.redo = redo;
   window.saveImage = saveImage;
@@ -636,26 +706,6 @@ function handleDraw(clientX, clientY) {
   window.selectTool = selectTool;
 
 })();
-
-
-
-let isDirty = false;
-
-// 例: inputやtextareaに変更があったら
-document.querySelectorAll('input, textarea, campus').forEach(el => {
-  el.addEventListener('input', () => {
-    isDirty = true;
-  });
-});
-
-window.addEventListener('beforeunload', function (e) {
-  if (!isDirty) return; // 変更なければ何もしない
-
-  e.preventDefault();
-  e.returnValue = ''; // 文字列は無視される
-});
-
-
 
 </script>
 </body>
