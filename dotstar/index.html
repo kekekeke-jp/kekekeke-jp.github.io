@@ -268,6 +268,11 @@
       <!-- JSで自動生成 -->
     </div>
 
+    <p>使った色</p>
+    <div id="usedColors" style="display:flex; flex-wrap: wrap; gap:6px; margin-bottom:1rem;">
+      <!-- JSで自動生成 -->
+    </div>
+
     <p>自分で色を作る</p>
     <div id="customColorPicker">
       <div id="previewBox"></div>
@@ -344,6 +349,26 @@
     }
   }
 
+  const usedColorsSet = new Set();
+const usedColorsContainer = document.getElementById("usedColors");
+
+function addUsedColor(newColor) {
+  if (usedColorsSet.has(newColor)) return;
+  usedColorsSet.add(newColor);
+
+  const div = document.createElement("div");
+  div.className = "color-circle";
+  div.style.backgroundColor = newColor;
+  div.title = newColor;
+  div.addEventListener("click", () => {
+    color = newColor;
+    hexOutput.value = newColor;
+    previewBox.style.backgroundColor = newColor;
+  });
+  usedColorsContainer.appendChild(div);
+}
+
+
   function saveHistory() {
     history.push(JSON.stringify(data));
     if(history.length > 100) history.shift();
@@ -384,17 +409,19 @@
   document.getElementById("width").addEventListener("change", resizeCanvas);
   document.getElementById("height").addEventListener("change", resizeCanvas);
 
-  function handleDraw(clientX, clientY) {
-    const rect = canvas.getBoundingClientRect();
-    const scaleX = canvas.width / rect.width;
-    const scaleY = canvas.height / rect.height;
-    const x = Math.floor((clientX - rect.left) * scaleX / pixelW);
-    const y = Math.floor((clientY - rect.top) * scaleY / pixelH);
-    if(x < 0 || x >= gridW || y < 0 || y >= gridH) return;
-    saveHistory();
-    data[y][x] = (tool === "pen") ? color : "#ffffff";
-    drawGrid();
-  }
+function handleDraw(clientX, clientY) {
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
+  const x = Math.floor((clientX - rect.left) * scaleX / pixelW);
+  const y = Math.floor((clientY - rect.top) * scaleY / pixelH);
+  if (x < 0 || x >= gridW || y < 0 || y >= gridH) return;
+  saveHistory();
+  data[y][x] = (tool === "pen") ? color : "#ffffff";
+  drawGrid();
+  if (tool === "pen") addUsedColor(color); // ←この行を追加
+}
+
 
   canvas.addEventListener("click", e => {
     handleDraw(e.clientX, e.clientY);
@@ -667,6 +694,7 @@
   window.saveSVG = saveSVG;
   window.selectTool = selectTool;
 })();
+
 </script>
 
 </body>
