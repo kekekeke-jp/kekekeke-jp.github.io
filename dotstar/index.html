@@ -435,26 +435,38 @@ function handleDraw(clientX, clientY) {
     }
   });
 
-  function saveImage() {
-    const sizeInput = document.getElementById("exportSize").value;
-    let size = parseInt(sizeInput);
-    if(isNaN(size) || size < 32) size = 512;
-    const aspect = canvas.height / canvas.width;
-    const tmp = document.createElement("canvas");
-    tmp.width = size;
-    tmp.height = size * aspect;
-    const tctx = tmp.getContext("2d");
-    for(let y=0; y<gridH; y++) {
-      for(let x=0; x<gridW; x++) {
-        tctx.fillStyle = data[y][x];
-        tctx.fillRect(x*(tmp.width/gridW), y*(tmp.height/gridH), tmp.width/gridW, tmp.height/gridH);
-      }
+function saveImage() {
+  const sizeInput = document.getElementById("exportSize").value;
+  let size = parseInt(sizeInput);
+  if (isNaN(size) || size < 32) size = 512;
+
+  const aspect = canvas.height / canvas.width;
+  const tmp = document.createElement("canvas");
+  tmp.width = size;
+  tmp.height = size * aspect;
+  const tctx = tmp.getContext("2d");
+
+  const cellWidth = tmp.width / gridW;
+  const cellHeight = tmp.height / gridH;
+
+  for (let y = 0; y < gridH; y++) {
+    for (let x = 0; x < gridW; x++) {
+      tctx.fillStyle = data[y][x];
+      tctx.fillRect(
+        Math.floor(x * cellWidth),
+        Math.floor(y * cellHeight),
+        Math.ceil(cellWidth),
+        Math.ceil(cellHeight)
+      );
     }
-    const link = document.createElement("a");
-    link.download = "dot.png";
-    link.href = tmp.toDataURL();
-    link.click();
   }
+
+  const link = document.createElement("a");
+  link.download = "dot.png";
+  link.href = tmp.toDataURL("image/png");
+  link.click();
+}
+
 
   function saveSVG() {
     const svgParts = [`<svg xmlns="http://www.w3.org/2000/svg" width="${gridW*10}" height="${gridH*10}">`];
