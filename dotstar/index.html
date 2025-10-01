@@ -408,31 +408,78 @@ function addUsedColor(newColor) {
   document.getElementById("width").addEventListener("change", resizeCanvas);
   document.getElementById("height").addEventListener("change", resizeCanvas);
 
-function handleDraw(clientX, clientY) {
+let isDrawing = false;
+let lastPos = null;
+
+function getCellFromPointer(clientX, clientY) {
   const rect = canvas.getBoundingClientRect();
   const scaleX = canvas.width / rect.width;
   const scaleY = canvas.height / rect.height;
   const x = Math.floor((clientX - rect.left) * scaleX / pixelW);
   const y = Math.floor((clientY - rect.top) * scaleY / pixelH);
-  if (x < 0 || x >= gridW || y < 0 || y >= gridH) return;
-  saveHistory();
-  data[y][x] = (tool === "pen") ? color : "#ffffff";
-  drawGrid();
-  if (tool === "pen") addUsedColor(color); // ←この行を追加
+  return {x, y};
 }
 
+function drawLine(x0, y0, x1, y1) {
+  const dx = Math.abs(x1 - x0);
+  const dy = Math.abs(y1 - y0);
+  const sx = (x0 < x1) ? 1 : -1;
+  const sy = (y0 < y1) ? 1 : -1;
+  let err = dx - dy;
 
-  canvas.addEventListener("click", e => {
-    handleDraw(e.clientX, e.clientY);
-  });
-
-  canvas.addEventListener("touchstart", e => {
-    e.preventDefault();
-    if(e.touches.length > 0) {
-      const touch = e.touches[0];
-      handleDraw(touch.clientX, touch.clientY);
+  while (true) {
+    if (x0 >= 0 && x0 < gridW && y0 >= 0 && y0 < gridH) {
+      data[y0][x0] = (tool === "pen") ? color : "#ffffff";
+      if (tool === "pen") addUsedColor(color);
     }
-  });
+    if (x0 === x1 && y0 === y1) break;
+    let e2 = 2 * err;
+    if (e2 > -dy) { err -= dy; x0 += sx; }
+    if (e2 < dx) { err += dx; y0 += sy; }
+  }
+}
+
+function handlePointerDraw(clientX, clientY) {
+  const pos = getCellFromPointer(clientX, clientY);
+  if (!lastPos) {
+    lastPos = pos;
+  }
+  saveHistory();
+  drawLine(lastPos.x, lastPos.y, pos.x, pos.y);
+  lastPos = pos;
+  drawGrid();
+}
+
+canvas.addEventListener("mousedown", e => {
+  isDrawing = true;
+  lastPos = null;
+  handlePointerDraw(e.clientX, e.clientY);
+});
+canvas.addEventListener("mousemove", e => {
+  if (!isDrawing) return;
+  handlePointerDraw(e.clientX, e.clientY);
+});
+window.addEventListener("mouseup", () => {
+  isDrawing = false;
+  lastPos = null;
+});
+
+canvas.addEventListener("touchstart", e => {
+  e.preventDefault();
+  isDrawing = true;
+  lastPos = null;
+  handlePointerDraw(e.touches[0].clientX, e.touches[0].clientY);
+});
+canvas.addEventListener("touchmove", e => {
+  e.preventDefault();
+  if (!isDrawing) return;
+  handlePointerDraw(e.touches[0].clientX, e.touches[0].clientY);
+});
+canvas.addEventListener("touchend", () => {
+  isDrawing = false;
+  lastPos = null;
+});
+
 
 function saveImage() {
   const sizeInput = document.getElementById("exportSize").value;
