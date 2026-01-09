@@ -241,6 +241,27 @@
   }
 }
 
+
+.warning2 p{
+  font-size: 13px;
+  margin:0;
+}
+
+.warning2 a{
+  color: #000;
+  text-decoration: none;
+}
+
+.warning2{
+  width: fit-content;
+  margin:20px 0 10px 0;
+  text-align: center;
+  background-color: #fff;
+  border: #303030 2px solid;
+  padding:5px 10px;
+  border-radius: 5px;
+}
+
 </style>
 </head>
 <body>
@@ -312,6 +333,11 @@
     <input type="number" id="exportSize" value="512" min="32" max="2048" /> px<br />
     <button onclick="saveImage()">PNG保存</button>
     <button onclick="saveSVG()">SVG保存</button>
+
+    <div class="warning2">
+      <p><a href="https://kekekeke-jp.github.io/dottercanvas/photo.pdf" target="_blank" rel="noopener noreferrer">画像の保存方法はこちら</a></p>
+    </div>
+
   </div>
 
   <div class="editor">
