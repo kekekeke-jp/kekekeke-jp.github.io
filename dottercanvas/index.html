@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>DOTTER CANVAS - ドット描画ツール</title>
+<link rel="icon" type="image/png" href="/dottercanvas/favicon-96x96.png" sizes="96x96" />
+<link rel="icon" type="image/svg+xml" href="/dottercanvas/favicon.svg" />
+<link rel="shortcut icon" href="/dottercanvas/favicon.ico" />
+<link rel="apple-touch-icon" sizes="180x180" href="/dottercanvas/apple-touch-icon.png" />
+<meta name="apple-mobile-web-app-title" content="DOTTER CANVAS" />
+<link rel="manifest" href="/dottercanvas/site.webmanifest" />
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://kekekeke-jp.github.io/dottercanvas/index.html">
+  <meta property="og:site_name" content="DOTTER CANVAS - ドット描画ツール">
+  <meta property="og:title" content="DOTTER CANVAS - ドット描画ツール">
+  <meta property="og:description" content="ドット絵を作ることができます。どうぞご自由にお使いください！">
+  <meta property="og:image" content="https://kekekeke-jp.github.io/dottercanvas/ogp.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Noto+Sans+JP:wght@100..900&display=swap" rel="stylesheet">
+<style>
+body{
+  margin:0;
+  font-family:"DotGothic16", monospace;
+  background:#f4f4f4;
+}
+header{
+  padding:0px;
+  font-size:28px;
+  text-align:center;
+  background:#fff;
+  border-bottom:1px solid #ccc;
+}
+main{
+  max-width:900px;
+  width: 90%;
+  margin:0 auto;
+  padding:0;
+}
+button{
+  font-family:inherit;
+  padding:8px 14px;
+  border:none;
+  background:#000;
+  color:#fff;
+  border-radius:4px;
+  cursor:pointer;
+}
+.list{
+  width: 100%;
+  margin-top:20px;
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(250px,1fr));
+  gap:12px;
+}
+.card{
+  background:#fff;
+  border:1px solid #ccc;
+  padding:12px;
+  width: 90%;
+  margin:0 auto;
+}
+.card h3{
+  margin:0 0 10px;
+  font-size:18px;
+}
+.card small{
+  color:#666;
+}
+.card .actions{
+  display:flex;
+  gap:6px;
+  margin-top:10px;
+}
+
+.preview{
+  width:100%;
+  aspect-ratio:1/1;
+  image-rendering: pixelated;
+  border:1px solid #ccc;
+  background:#fff;
+  margin-bottom:8px;
+}
+
+.warning{
+  width: 90%;
+  margin:10px auto;
+  max-width: 900px;
+  text-align: center;
+  background-color: #fff;
+  border: #ff0000 3px solid;
+  padding:10px;
+}
+
+.warning p{
+  font-size: 15px;
+}
+
+  @media (max-width: 768px) {
+
+    .list{
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .card{
+      width: calc(90%);
+      margin:0;
+    }
+  }
+
+  .color{
+    color: #ff0000;
+  }
+
+  header img{
+    height: 100px;
+  }
+</style>
+</head>
+<body>
+
+<header><a href="https://kekekeke-jp.github.io/dottercanvas/index.html"><img src="https://kekekeke-jp.github.io/dottercanvas/header.png" alt=""></a></header>
+
+<div class="warning">
+  <p>このツールで打たれたドット絵データはお客様のブラウザに保存されています。<br>ブラウザを変えたり、機種を変えたりした時、<b><u><p class="color">データは消える</p></u></b>可能性があります。</p>
+</div>
+
+<main>
+  <button onclick="newProject()">＋ 新しく描く</button>
+
+  <div class="list" id="list"></div>
+</main>
+
+
+
+<script>
+const KEY = "dottercanvas_projects";
+
+// ---------------- 基本操作 ----------------
+function loadProjects(){
+  return JSON.parse(localStorage.getItem(KEY) || "{}");
+}
+
+function saveProjects(data){
+  localStorage.setItem(KEY, JSON.stringify(data));
+}
+
+function newProject(){
+  const id = crypto.randomUUID();
+  const projects = loadProjects();
+  projects[id] = {
+    id,
+    name: "新しい作品",
+    width: 32,
+    height: 32,
+    data: null,
+    updatedAt: Date.now()
+  };
+  saveProjects(projects);
+  location.href = `https://kekekeke-jp.github.io/dottercanvas/editor.html?id=${id}`;
+}
+
+function openProject(id){
+  location.href = `https://kekekeke-jp.github.io/dottercanvas/editor.html?id=${id}`;
+}
+
+function renameProject(id){
+  const projects = loadProjects();
+  const name = prompt("名前を入力", projects[id].name);
+  if(!name) return;
+  projects[id].name = name;
+  projects[id].updatedAt = Date.now();
+  saveProjects(projects);
+  render();
+}
+
+function deleteProject(id){
+  if(!confirm("削除しますか？")) return;
+  const projects = loadProjects();
+  delete projects[id];
+  saveProjects(projects);
+  render();
+}
+
+// ---------------- プレビュー描画 ----------------
+function drawPreview(canvas, project){
+  if(!project.data) return;
+
+  const ctx = canvas.getContext("2d");
+  const w = project.width;
+  const h = project.height;
+  const data = project.data;
+
+  const scale = Math.min(
+    canvas.width / w,
+    canvas.height / h
+  );
+
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  for(let y=0; y<h; y++){
+    for(let x=0; x<w; x++){
+      ctx.fillStyle = data[y][x];
+      ctx.fillRect(
+        x * scale,
+        y * scale,
+        Math.ceil(scale),
+        Math.ceil(scale)
+      );
+    }
+  }
+}
+
+// ---------------- 一覧描画 ----------------
+function render(){
+  const list = document.getElementById("list");
+  list.innerHTML = "";
+
+  const projects = loadProjects();
+
+  Object.values(projects)
+    .sort((a,b)=>b.updatedAt-a.updatedAt)
+    .forEach(p=>{
+      const div = document.createElement("div");
+      div.className = "card";
+      div.innerHTML = `
+        <h3>${p.name}</h3>
+        <canvas class="preview" width="128" height="128"></canvas>
+        <small>${new Date(p.updatedAt).toLocaleString()}</small>
+        <div class="actions">
+          <button onclick="openProject('${p.id}')">編集</button>
+          <button onclick="renameProject('${p.id}')">名前</button>
+          <button onclick="deleteProject('${p.id}')">削除</button>
+        </div>
+      `;
+      list.appendChild(div);
+
+      const canvas = div.querySelector(".preview");
+      drawPreview(canvas, p);
+    });
+}
+
+render();
+</script>
+
+
+</body>
+</html>
