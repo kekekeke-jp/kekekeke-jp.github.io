@@ -448,6 +448,8 @@
 <script>
 (() => {
 
+    
+
   // ===== ローカル保存連携 =====
 const STORAGE_KEY = "dottercanvas_projects";
 const params = new URLSearchParams(location.search);
@@ -457,6 +459,19 @@ if (!projectId) {
   location.href = "https://kekekeke-jp.github.io/dottercanvas/index.html";
 }
 
+function hasEditedData() {
+  for (let y = 0; y < gridH; y++) {
+    for (let x = 0; x < gridW; x++) {
+      if (data[y][x] !== "#ffffff") {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+
+    
 function loadProjects() {
   return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
 }
@@ -569,23 +584,57 @@ function addUsedColor(newColor) {
     saveProjectToLocal();
   }
 
-  function resizeCanvas() {
-    const w = parseInt(document.getElementById("width").value);
-    const h = parseInt(document.getElementById("height").value);
-    if(isNaN(w) || isNaN(h) || w<1 || w>128 || h<1 || h>128) return;
-    gridW = w;
-    gridH = h;
-    const ratio = gridW / gridH;
-    canvas.width = 512;
-    canvas.height = 512 / ratio;
-    pixelW = canvas.width / gridW;
-    pixelH = canvas.height / gridH;
-    data = Array.from({ length: gridH }, () => Array(gridW).fill("#ffffff"));
-    history = [];
-    future = [];
-    drawGrid();
-    saveProjectToLocal();
+function resizeCanvas() {
+  const wInput = document.getElementById("width");
+  const hInput = document.getElementById("height");
+
+  const newW = parseInt(wInput.value);
+  const newH = parseInt(hInput.value);
+
+  if (
+    isNaN(newW) || isNaN(newH) ||
+    newW < 1 || newW > 128 ||
+    newH < 1 || newH > 128
+  ) return;
+
+  // サイズが変わらないなら何もしない
+  if (newW === gridW && newH === gridH) return;
+
+  // ★ ここが警告部分
+  if (hasEditedData()) {
+    const ok = confirm(
+      "キャンバスサイズを変更すると、\n現在のドット絵データはすべて消えます。\n\n本当に変更しますか？"
+    );
+    if (!ok) {
+      // 入力欄を元に戻す
+      wInput.value = gridW;
+      hInput.value = gridH;
+      return;
+    }
   }
+
+  // --- 通常のリサイズ処理 ---
+  gridW = newW;
+  gridH = newH;
+
+  const ratio = gridW / gridH;
+  canvas.width = 512;
+  canvas.height = 512 / ratio;
+
+  pixelW = canvas.width / gridW;
+  pixelH = canvas.height / gridH;
+
+  data = Array.from({ length: gridH }, () =>
+    Array(gridW).fill("#ffffff")
+  );
+
+  history = [];
+  future = [];
+
+  drawGrid();
+  saveProjectToLocal();
+}
+
 
   document.getElementById("width").addEventListener("change", resizeCanvas);
   document.getElementById("height").addEventListener("change", resizeCanvas);
