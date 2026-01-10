@@ -3,7 +3,10 @@ DOTTER CANVASという名前のまま公開するのはNGとさせていただ�
 なお、収益化などは行わないでください。
 公開する際は当コンテンツリンクを含めたクレジット表記もお願いします
 -------
-"<a href="https://kekekeke-jp.github.io/dottercanvas/">Created by kekekeke-jp<br>Powerd by "DOTTER CANVAS"</a>"
+link: 
+https://kekekeke-jp.github.io/dottercanvas/
+credit: 
+Created by kekekeke-jp<br>Powerd by "DOTTER CANVAS"</a>
 -------
 
 You are free to use this content within the bounds of common sense.
