@@ -7,8 +7,13 @@ You are free to use this content within the bounds of common sense.
 However, publishing it under the name “DOTTER CANVAS” is not permitted.
 In addition, please do not use it for monetization or any commercial purposes.
 
+--------------------------------------
+--------------------------------------
 
 "DOTTER CANVAS"
 
 Created by kekekeke-jp
 Personal project / No ads
+
+--------------------------------------
+--------------------------------------
