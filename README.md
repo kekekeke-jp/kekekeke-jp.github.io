@@ -5,6 +5,7 @@ DOTTER CANVASという名前のまま公開するのはNGとさせていただ�
 -------
 link: 
 https://kekekeke-jp.github.io/dottercanvas/
+
 credit: 
 Created by kekekeke-jp<br>Powerd by "DOTTER CANVAS"</a>
 -------
