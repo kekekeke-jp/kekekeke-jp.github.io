@@ -9,6 +9,6 @@ In addition, please do not use it for monetization or any commercial purposes.
 
 
 "DOTTER CANVAS"
-2026/1/9~
+
 Created by kekekeke-jp
 Personal project / No ads
