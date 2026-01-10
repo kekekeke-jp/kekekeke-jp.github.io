@@ -2,6 +2,7 @@
 DOTTER CANVASという名前のまま公開するのはNGとさせていただきます。
 なお、収益化などは行わないでください。
 
+
 You are free to use this content within the bounds of common sense.
 However, publishing it under the name “DOTTER CANVAS” is not permitted.
 In addition, please do not use it for monetization or any commercial purposes.
