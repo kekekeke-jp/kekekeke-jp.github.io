@@ -384,6 +384,9 @@
     <input type="number" id="width" value="32" min="1" max="128" /> ×
     <input type="number" id="height" value="32" min="1" max="128" /> BIT
 
+    <h2>グリッド表示</h2>
+    <button id="gridToggleBtn" onclick="toggleGrid()">グリッドなし</button>
+
     <h2>COLOR</h2>
     <p>デフォルトカラー</p>
     <div id="defaultColors" style="display:flex; flex-wrap: wrap; gap:6px; margin-bottom:1rem;width: 200px;">
@@ -437,7 +440,7 @@
     <button onclick="saveSVG()">SVG保存</button>
 
     <div class="warning2">
-      <p><a href="https://kekekeke-jp.github.io/dottercanvas/photo.pdf" target="_blank" rel="noopener noreferrer">画像の保存方法はこちら</a></p>
+      <p><a href="/dottercanvas/photo.pdf" target="_blank" rel="noopener noreferrer">画像の保存方法はこちら</a></p>
     </div>
 
   </div>
@@ -514,6 +517,7 @@ function loadProjectFromLocal() {
   canvas.height = 512 * (gridH / gridW);
   pixelW = canvas.width / gridW;
   pixelH = canvas.height / gridH;
+  window.showGrid = true;
 }
 
 
@@ -533,18 +537,55 @@ function loadProjectFromLocal() {
 
   loadProjectFromLocal();
 
-  function drawGrid() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    for(let y=0; y<gridH; y++) {
-      for(let x=0; x<gridW; x++) {
-        ctx.fillStyle = data[y][x];
-        ctx.fillRect(x*pixelW, y*pixelH, pixelW, pixelH);
-        ctx.strokeStyle = "#e0e0e0";
-        ctx.strokeRect(x*pixelW, y*pixelH, pixelW, pixelH);
+
+  const btn = document.getElementById("gridToggleBtn");
+
+function drawGrid() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  const isLargeGrid = gridW >= 64 || gridH >= 64;
+  ctx.lineWidth = isLargeGrid ? 0.25 : 1;
+  ctx.strokeStyle = "#e0e0e0";
+
+  for (let y = 0; y < gridH; y++) {
+    for (let x = 0; x < gridW; x++) {
+      ctx.fillStyle = data[y][x];
+      ctx.fillRect(
+        x * pixelW,
+        y * pixelH,
+        pixelW,
+        pixelH
+      );
+
+      if (window.showGrid) {
+        ctx.strokeRect(
+          x * pixelW,
+          y * pixelH,
+          pixelW,
+          pixelH
+        );
       }
     }
-    saveProjectToLocal();
   }
+
+  saveProjectToLocal();
+}
+
+
+
+function toggleGrid() {
+  window.showGrid = !window.showGrid;
+
+  const btn = document.getElementById("gridToggleBtn");
+  if (btn) {
+    btn.textContent = window.showGrid ? "グリッドなし" : "グリッドあり";
+  }
+
+  drawGrid();
+}
+
+
+
 
   const usedColorsSet = new Set();
 const usedColorsContainer = document.getElementById("usedColors");
@@ -1036,6 +1077,7 @@ hexOutput.addEventListener("input", () => {
   window.saveImage = saveImage;
   window.saveSVG = saveSVG;
   window.selectTool = selectTool;
+  window.toggleGrid = toggleGrid;
 })();
 
 
