@@ -488,6 +488,7 @@ function saveProjectToLocal() {
   projects[projectId].width = gridW;
   projects[projectId].height = gridH;
   projects[projectId].data = data;
+  projects[projectId].usedColors = [...usedColorsSet];
   projects[projectId].updatedAt = Date.now();
 
   saveProjects(projects);
@@ -510,6 +511,9 @@ function loadProjectFromLocal() {
   canvas.height = 512 * (gridH / gridW);
   pixelW = canvas.width / gridW;
   pixelH = canvas.height / gridH;
+  if (Array.isArray(p.usedColors)) {
+  p.usedColors.forEach(c => addUsedColor(c));
+  }
 }
 
 
@@ -774,6 +778,15 @@ function saveImage() {
   const picker = document.getElementById("customColorPicker");
   const previewBox = document.getElementById("previewBox");
   const hexOutput = document.getElementById("hexOutput");
+  hexOutput.removeAttribute("readonly");
+
+hexOutput.addEventListener("input", () => {
+  const v = hexOutput.value.trim();
+  if (!/^#[0-9a-fA-F]{6}$/.test(v)) return;
+
+  color = v;
+  previewBox.style.backgroundColor = v;
+});
 
   const hsb = { h: 0, s: 100, b: 100 };
 
