@@ -290,8 +290,6 @@
     font-weight: bold;
   }
   .color-circle {
-    width: 28px;
-    height: 28px;
     border-radius: 50%;
     border: 1px solid #ccc;
     cursor: pointer;
@@ -356,6 +354,12 @@
   border-radius: 5px;
 }
 
+#defaultColors > *,
+#usedColors > * {
+  flex: 0 0 calc((100% - 6px * 4) / 5);
+  aspect-ratio: 1 / 1;
+}
+
 </style>
 </head>
 <body>
@@ -382,12 +386,12 @@
 
     <h2>COLOR</h2>
     <p>デフォルトカラー</p>
-    <div id="defaultColors" style="display:flex; flex-wrap: wrap; gap:6px; margin-bottom:1rem;">
+    <div id="defaultColors" style="display:flex; flex-wrap: wrap; gap:6px; margin-bottom:1rem;width: 200px;">
       <!-- JSで自動生成 -->
     </div>
 
     <p>使った色</p>
-    <div id="usedColors" style="display:flex; flex-wrap: wrap; gap:6px; margin-bottom:1rem;">
+    <div id="usedColors" style="display:flex; flex-wrap: wrap; gap:6px; margin-bottom:1rem;width: 200px;">
       <!-- JSで自動生成 -->
     </div>
 
@@ -1004,6 +1008,7 @@ hexOutput.addEventListener("input", () => {
   updatePreview();
 
   // ===== デフォルトカラーの生成と反映 =====
+
   const defaultColors = [
     "#A8DADC", "#6C9AA6", "#457B9D", "#32577D", "#1D3557",
     "#4DC4FF", "#5FC271", "#FFD166", "#FFA1D7", "#FF5858",
