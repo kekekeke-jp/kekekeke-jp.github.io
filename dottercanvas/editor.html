@@ -98,6 +98,16 @@ body{
     overflow: scroll;
 }
 
+.pc{
+  display: block;
+  opacity: 1;
+}
+
+.sp{
+  display: none;
+  opacity: 0;
+}
+
 @media screen and (max-width: 800px) {
 .page{
   width: 100%;
@@ -111,6 +121,16 @@ body{
 }
 .con{
   height: calc(100svh - 70px);
+}
+
+.pc{
+  display: none;
+  opacity: 0;
+}
+
+.sp{
+  display: block;
+  opacity: 0;
 }
 }
 
@@ -447,7 +467,7 @@ body{
     <div class="con">
 
 <header>
-  <a href="https://kekekeke-jp.github.io/dottercanvas/"><img src="https://kekekeke-jp.github.io/dottercanvas/logo.png" alt="Logo" /></a>
+  <a href="https://kekekeke-jp.github.io/dottercanvas/"><img src="https://kekekeke-jp.github.io/dottercanvas/headlogo.png" alt="Logo" class="pc" /><img src="https://kekekeke-jp.github.io/dottercanvas/logo.png" alt="Logo" class="sp" /></a>
   <div class="controls">
     <button onclick="undo()" title="Undo">←</button>
     <button onclick="redo()" title="Redo">→</button>
