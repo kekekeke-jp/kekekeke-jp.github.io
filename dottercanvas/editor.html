@@ -23,7 +23,96 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Noto+Sans+JP:wght@100..900&display=swap" rel="stylesheet">
 <style>
+html, body {
+  height: 100%;
+  margin: 0;
+}
 
+
+body{
+  margin:0;
+  font-family:"DotGothic16", monospace;
+  background:#f4f4f4;
+  height: 100svh;
+  padding:0;
+  overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(to right, #f4f4f4, #fff);
+}
+
+.page{
+  width: 100%;
+  margin:0;
+  height: 100svh;
+  overflow: scroll;
+}
+
+.navi{
+  width: 100%;
+  height: 70px;
+  position: fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  margin:0;
+  padding:0;
+  display: none;
+  overflow: hidden;
+  border-top: solid 2px #cdcdcd;
+}
+
+.navi a{
+  width: 50%;
+  height: 100%;
+  margin:0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  align-items: center;
+  cursor: pointer;
+  text-decoration: none;
+  color: #555555;
+}
+
+.navi a svg{
+  width: 27px;
+  height: 27px;
+  margin:0;
+  padding:0;
+}
+
+.navi a p{
+  font-size: 11px;
+  margin:0;
+  padding:0;
+}
+
+
+
+.con{
+    width: 100%;
+    height:100svh;
+    position: fixed;
+    overflow: scroll;
+}
+
+@media screen and (max-width: 800px) {
+.page{
+  width: 100%;
+  margin:0;
+  height: calc(100svh - 70px);
+  overflow: scroll;
+}
+
+.navi{
+  display: flex;
+}
+.con{
+  height: calc(100svh - 70px);
+}
+}
 
 
 #loading {
@@ -116,22 +205,8 @@
   visibility: hidden;
 }
 
-.con{
-    width: 100%;
-    height: 100svh;
-    position: fixed;
-    overflow: scroll;
-}
-
   * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    font-family: "DotGothic16", monospace, sans-serif;
-    height: 100svh;
-    display: flex;
-    flex-direction: column;
-    background: linear-gradient(to right, #f4f4f4, #fff);
-  }
+
   header {
     display: flex;
     justify-content: space-between;
@@ -367,11 +442,12 @@
   <div id="loading">
   <div class="loader"></div>
 </div>
+<div class="page">
 
     <div class="con">
 
 <header>
-  <a href="https://kekekeke-jp.github.io/dottercanvas/"><img src="https://kekekeke-jp.github.io/dottercanvas/headlogo.png" alt="Logo" /></a>
+  <a href="https://kekekeke-jp.github.io/dottercanvas/"><img src="https://kekekeke-jp.github.io/dottercanvas/logo.png" alt="Logo" /></a>
   <div class="controls">
     <button onclick="undo()" title="Undo">←</button>
     <button onclick="redo()" title="Redo">→</button>
@@ -450,6 +526,15 @@
   </div>
 </div>
 </div>
+
+
+</div>
+
+<div class="navi">
+  <a href="https://kekekeke-jp.github.io/dottercanvas/index.html"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M19 21H5C4.44772 21 4 20.5523 4 20V11L1 11L11.3273 1.6115C11.7087 1.26475 12.2913 1.26475 12.6727 1.6115L23 11L20 11V20C20 20.5523 19.5523 21 19 21ZM6 19H18V9.15745L12 3.7029L6 9.15745V19Z"></path></svg><p>ホーム</p></a>
+  <a href="#"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M16.7574 2.99678L14.7574 4.99678H5V18.9968H19V9.23943L21 7.23943V19.9968C21 20.5491 20.5523 20.9968 20 20.9968H4C3.44772 20.9968 3 20.5491 3 19.9968V3.99678C3 3.4445 3.44772 2.99678 4 2.99678H16.7574ZM20.4853 2.09729L21.8995 3.5115L12.7071 12.7039L11.2954 12.7064L11.2929 11.2897L20.4853 2.09729Z"></path></svg><p>エディター</p></a>
+</div>
+
 
 
 <script>
